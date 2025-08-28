@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Virtual SQL - Aprende SQL de Forma Interactiva</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .campus-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .campus-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .sql-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .sql-keyword { color: #569cd6; }
+        .sql-string { color: #ce9178; }
+        .sql-comment { color: #6a9955; }
+        
+        .achievement-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .building-animation {
+            transition: all 0.3s ease;
+        }
+        
+        .building-animation:hover {
+            transform: scale(1.1) rotate(2deg);
+        }
+        
+        .xp-bar {
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+            animation: slideIn 2s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { width: 0%; }
+            to { width: var(--width); }
+        }
+        
+        .quiz-option {
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-option:hover {
+            transform: translateX(5px);
+        }
+        
+        .professor-avatar {
+            animation: bounce 3s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Campus Header -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-university text-3xl text-blue-600 mr-3"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">Campus Virtual SQL</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center bg-yellow-100 px-3 py-2 rounded-full">
+                        <i class="fas fa-star text-yellow-500 mr-2"></i>
+                        <span id="user-xp" class="font-semibold">1,250 XP</span>
+                    </div>
+                    <div class="flex items-center bg-purple-100 px-3 py-2 rounded-full">
+                        <i class="fas fa-trophy text-purple-500 mr-2"></i>
+                        <span id="user-level" class="font-semibold">Aprendiz</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Principal -->
+    <section class="container mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Progreso del Estudiante -->
+            <div class="campus-card rounded-xl p-6 shadow-lg">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-chart-line text-blue-500 mr-2"></i>
+                    Mi Progreso
+                </h3>
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>Nivel Actual</span>
+                        <span>2,000 XP para siguiente nivel</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="xp-bar h-3 rounded-full" style="--width: 62.5%; width: 62.5%;"></div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Lecciones Completadas</span>
+                        <span class="font-semibold">3/8</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Desafíos Resueltos</span>
+                        <span class="font-semibold">12/20</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logros Recientes -->
+            <div class="campus-card rounded-xl p-6 shadow-lg">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-medal text-yellow-500 mr-2"></i>
+                    Logros Recientes
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex items-center achievement-badge">
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-table text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-sm">Maestro CREATE TABLE</p>
+                            <p class="text-xs text-gray-600">Completaste la lección básica</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-code text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-sm">Primer Código</p>
+                            <p class="text-xs text-gray-600">Ejecutaste tu primera consulta</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ranking -->
+            <div class="campus-card rounded-xl p-6 shadow-lg">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-ranking-star text-purple-500 mr-2"></i>
+                    Ranking Campus
+                </h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between p-2 bg-gold bg-yellow-50 rounded">
+                        <div class="flex items-center">
+                            <span class="text-yellow-600 font-bold mr-2">1.</span>
+                            <span class="text-sm">Ana García</span>
+                        </div>
+                        <span class="text-sm font-semibold">3,420 XP</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2 bg-gray-100 rounded">
+                        <div class="flex items-center">
+                            <span class="text-gray-600 font-bold mr-2">2.</span>
+                            <span class="text-sm font-semibold">¡Tú!</span>
+                        </div>
+                        <span class="text-sm font-semibold">1,250 XP</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2 rounded">
+                        <div class="flex items-center">
+                            <span class="text-gray-600 font-bold mr-2">3.</span>
+                            <span class="text-sm">Carlos López</span>
+                        </div>
+                        <span class="text-sm font-semibold">1,180 XP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mapa del Campus -->
+    <section class="container mx-auto px-6 py-8">
+        <h2 class="text-3xl font-bold text-white text-center mb-8">
+            <i class="fas fa-map text-yellow-300 mr-3"></i>
+            Explora Nuestro Campus Virtual
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="campus-card rounded-xl p-6 shadow-lg text-center building-animation cursor-pointer" onclick="showSection('create-table')">
+                <div class="text-4xl mb-4">🏛️</div>
+                <h3 class="text-lg font-bold text-gray-800">Aula CREATE TABLE</h3>
+                <p class="text-sm text-gray-600 mt-2">Aprende a crear tablas en SQL</p>
+                <div class="mt-3">
+                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Disponible</span>
+                </div>
+            </div>
+            
+            <div class="campus-card rounded-xl p-6 shadow-lg text-center building-animation cursor-pointer" onclick="showSection('lab')">
+                <div class="text-4xl mb-4">🧪</div>
+                <h3 class="text-lg font-bold text-gray-800">Laboratorio</h3>
+                <p class="text-sm text-gray-600 mt-2">Practica con editor SQL en vivo</p>
+                <div class="mt-3">
+                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Interactivo</span>
+                </div>
+            </div>
+            
+            <div class="campus-card rounded-xl p-6 shadow-lg text-center building-animation cursor-pointer" onclick="showSection('challenges')">
+                <div class="text-4xl mb-4">🎮</div>
+                <h3 class="text-lg font-bold text-gray-800">Zona Desafíos</h3>
+                <p class="text-sm text-gray-600 mt-2">Ejercicios gamificados</p>
+                <div class="mt-3">
+                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">+500 XP</span>
+                </div>
+            </div>
+            
+            <div class="campus-card rounded-xl p-6 shadow-lg text-center building-animation cursor-pointer" onclick="showSection('library')">
+                <div class="text-4xl mb-4">📚</div>
+                <h3 class="text-lg font-bold text-gray-800">Biblioteca Digital</h3>
+                <p class="text-sm text-gray-600 mt-2">Accede al material de estudio</p>
+                <div class="mt-3">
+                    <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs">PDF Original</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Aula CREATE TABLE -->
+    <section id="create-table" class="container mx-auto px-6 py-8 hidden">
+        <div class="campus-card rounded-xl p-8 shadow-lg">
+            <div class="flex items-center mb-6">
+                <div class="professor-avatar text-5xl mr-4">👨‍🏫</div>
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Aula: CREATE TABLE</h2>
+                    <p class="text-gray-600">Profesor Virtual: Dr. SQL García</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">📖 Lección Interactiva</h3>
+                    <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                        <h4 class="text-lg font-semibold text-blue-800 mb-3">¿Qué es CREATE TABLE?</h4>
+                        <p class="text-gray-700 mb-4">
+                            La instrucción <code class="bg-gray-200 px-2 py-1 rounded">CREATE TABLE</code> se utiliza para crear una nueva tabla en una base de datos.
+                        </p>
+                        <h4 class="text-lg font-semibold text-blue-800 mb-3">Sintaxis Básica:</h4>
+                        <div class="bg-gray-800 text-green-400 p-4 rounded font-mono text-sm overflow-x-auto">
+                            <span class="sql-keyword">CREATE TABLE</span> table_name (<br>
+                            &nbsp;&nbsp;column1 datatype,<br>
+                            &nbsp;&nbsp;column2 datatype,<br>
+                            &nbsp;&nbsp;column3 datatype,<br>
+                            &nbsp;&nbsp;....<br>
+                            );
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-6 rounded-lg">
+                        <h4 class="text-lg font-semibold text-green-800 mb-3">Ejemplo Práctico: Tabla Persons</h4>
+                        <div class="bg-gray-800 text-green-400 p-4 rounded font-mono text-sm overflow-x-auto">
+                            <span class="sql-keyword">CREATE TABLE</span> Persons (<br>
+                            &nbsp;&nbsp;PersonID <span class="sql-keyword">INT</span>,<br>
+                            &nbsp;&nbsp;Apellido <span class="sql-keyword">VARCHAR</span>(255),<br>
+                            &nbsp;&nbsp;Nombre <span class="sql-keyword">VARCHAR</span>(255),<br>
+                            &nbsp;&nbsp;Direccion <span class="sql-keyword">VARCHAR</span>(255),<br>
+                            &nbsp;&nbsp;Ciudad <span class="sql-keyword">VARCHAR</span>(255)<br>
+                            );
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">🧠 Quiz Interactivo</h3>
+                    <div id="quiz-container" class="space-y-4">
+                        <div class="bg-purple-50 p-6 rounded-lg">
+                            <p class="font-semibold text-gray-800 mb-4">¿Cuál es la palabra clave para crear una tabla?</p>
+                            <div class="space-y-2">
+                                <button class="quiz-option w-full text-left p-3 bg-white rounded border hover:bg-purple-100" onclick="checkAnswer(this, false)">
+                                    A) MAKE TABLE
+                                </button>
+                                <button class="quiz-option w-full text-left p-3 bg-white rounded border hover:bg-purple-100" onclick="checkAnswer(this, true)">
+                                    B) CREATE TABLE
+                                </button>
+                                <button class="quiz-option w-full text-left p-3 bg-white rounded border hover:bg-purple-100" onclick="checkAnswer(this, false)">
+                                    C) NEW TABLE
+                                </button>
+                                <button class="quiz-option w-full text-left p-3 bg-white rounded border hover:bg-purple-100" onclick="checkAnswer(this, false)">
+                                    D) BUILD TABLE
+                                </button>
+                            </div>
+                            <div id="quiz-feedback" class="mt-4 hidden"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <button onclick="completeLesson()" class="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                            <i class="fas fa-check mr-2"></i>
+                            Completar Lección (+100 XP)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Laboratorio -->
+    <section id="lab" class="container mx-auto px-6 py-8 hidden">
+        <div class="campus-card rounded-xl p-8 shadow-lg">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-flask text-blue-500 mr-3"></i>
+                Laboratorio SQL Interactivo
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Editor SQL</h3>
+                    <textarea id="sql-editor" class="sql-editor w-full h-64 p-4 rounded-lg resize-none" placeholder="-- Escribe tu código SQL aquí
+CREATE TABLE mi_tabla (
+    id INT,
+    nombre VARCHAR(255)
+);"></textarea>
+                    <div class="mt-4 flex space-x-4">
+                        <button onclick="executeSQL()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-play mr-2"></i>
+                            Ejecutar
+                        </button>
+                        <button onclick="clearEditor()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-trash mr-2"></i>
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Resultado de Ejecución</h3>
+                    <div id="sql-result" class="bg-gray-100 p-4 rounded-lg h-64 overflow-auto">
+                        <p class="text-gray-600 text-center mt-20">Ejecuta tu código SQL para ver los resultados aquí</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">Ejercicios Sugeridos:</h4>
+                        <div class="space-y-2 text-sm">
+                            <button onclick="loadExample(1)" class="w-full text-left p-2 bg-blue-50 rounded hover:bg-blue-100">
+                                1. Crear tabla 'Estudiantes'
+                            </button>
+                            <button onclick="loadExample(2)" class="w-full text-left p-2 bg-blue-50 rounded hover:bg-blue-100">
+                                2. Crear tabla 'Productos'
+                            </button>
+                            <button onclick="loadExample(3)" class="w-full text-left p-2 bg-blue-50 rounded hover:bg-blue-100">
+                                3. Crear tabla 'Empleados'
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Desafíos -->
+    <section id="challenges" class="container mx-auto px-6 py-8 hidden">
+        <div class="campus-card rounded-xl p-8 shadow-lg">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-gamepad text-purple-500 mr-3"></i>
+                Zona de Desafíos Gamificados
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-green-800">Desafío Básico</h3>
+                        <span class="bg-green-600 text-white px-2 py-1 rounded-full text-xs">+50 XP</span>
+                    </div>
+                    <p class="text-green-700 mb-4">Crea una tabla llamada 'Libros' con las columnas: ID, Titulo, Autor, Año</p>
+                    <button onclick="startChallenge(1)" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Comenzar
+                    </button>
+                </div>
+                
+                <div class="bg-gradient-to-br from-yellow-100 to-yellow-200 p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-yellow-800">Desafío Intermedio</h3>
+                        <span class="bg-yellow-600 text-white px-2 py-1 rounded-full text-xs">+100 XP</span>
+                    </div>
+                    <p class="text-yellow-700 mb-4">Crea una tabla 'Pedidos' con restricciones PRIMARY KEY y NOT NULL</p>
+                    <button onclick="startChallenge(2)" class="w-full bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition-colors">
+                        <i class="fas fa-trophy mr-2"></i>
+                        Intentar
+                    </button>
+                </div>
+                
+                <div class="bg-gradient-to-br from-red-100 to-red-200 p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-red-800">Desafío Avanzado</h3>
+                        <span class="bg-red-600 text-white px-2 py-1 rounded-full text-xs">+200 XP</span>
+                    </div>
+                    <p class="text-red-700 mb-4">Crea un sistema completo de tablas relacionadas con FOREIGN KEYS</p>
+                    <button class="w-full bg-gray-400 text-white py-2 rounded-lg cursor-not-allowed">
+                        <i class="fas fa-lock mr-2"></i>
+                        Bloqueado
+                    </button>
+                </div>
+            </div>
+            
+            <div id="challenge-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white rounded-xl p-8 max-w-2xl w-full mx-4">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 id="challenge-title" class="text-2xl font-bold text-gray-800"></h3>
+                        <button onclick="closeChallenge()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div id="challenge-content" class="mb-6"></div>
+                    <textarea id="challenge-editor" class="sql-editor w-full h-32 p-4 rounded-lg resize-none"></textarea>
+                    <div class="mt-4 flex space-x-4">
+                        <button onclick="submitChallenge()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                            <i class="fas fa-check mr-2"></i>
+                            Enviar Solución
+                        </button>
+                        <button onclick="closeChallenge()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                            Cancelar
+                        </button>
+                    </div>
+                    <div id="challenge-feedback" class="mt-4 hidden"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Biblioteca -->
+    <section id="library" class="container mx-auto px-6 py-8 hidden">
+        <div class="campus-card rounded-xl p-8 shadow-lg">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-book text-orange-500 mr-3"></i>
+                Biblioteca Digital SQL
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="bg-orange-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-orange-800 mb-4">Documento Original: Sentencias-SQL.pdf</h3>
+                        <p class="text-gray-700 mb-4">
+                            Accede al material de estudio completo sobre sentencias SQL. Este documento contiene:
+                        </p>
+                        <ul class="text-gray-700 space-y-2 mb-6">
+                            <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Sintaxis completa de CREATE TABLE</li>
+                            <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Ejemplos prácticos detallados</li>
+                            <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Tipos de datos disponibles</li>
+                            <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Mejores prácticas</li>
+                        </ul>
+                        <a href="https://page.gensparksite.com/get_upload_url/4a018a46b067eb8d46845822cc2472d18d53c15bec9d7eedcbc9bc508cb96138/default/1d5aa989-72fa-4ab0-a199-4d7197ff7b47" 
+                           target="_blank" 
+                           class="inline-block bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors">
+                            <i class="fas fa-external-link-alt mr-2"></i>
+                            Abrir PDF Original
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Recursos Adicionales</h3>
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800">Tipos de Datos SQL</h4>
+                            <p class="text-sm text-gray-600 mt-2">Guía completa de tipos de datos</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-green-800">Ejercicios Prácticos</h4>
+                            <p class="text-sm text-gray-600 mt-2">Colección de ejercicios resueltos</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-purple-800">Cheat Sheet</h4>
+                            <p class="text-sm text-gray-600 mt-2">Referencia rápida de comandos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h4 class="font-semibold text-gray-800 mb-3">Progreso de Lectura</h4>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-600 h-2 rounded-full" style="width: 40%;"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">40% completado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer del Campus -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-university text-2xl mr-3"></i>
+                <h3 class="text-xl font-bold">Campus Virtual SQL</h3>
+            </div>
+            <p class="text-gray-300 mb-4">Aprende SQL de forma interactiva y divertida</p>
+            <div class="flex justify-center space-x-6">
+                <i class="fab fa-github text-2xl hover:text-blue-400 cursor-pointer"></i>
+                <i class="fab fa-linkedin text-2xl hover:text-blue-400 cursor-pointer"></i>
+                <i class="fab fa-twitter text-2xl hover:text-blue-400 cursor-pointer"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentXP = 1250;
+        let currentLevel = "Aprendiz";
+        let completedLessons = 3;
+        
+        // Sistema de navegación
+        function showSection(sectionId) {
+            // Ocultar todas las secciones
+            const sections = ['create-table', 'lab', 'challenges', 'library'];
+            sections.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            
+            // Mostrar la sección seleccionada
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Scroll suave a la sección
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Sistema de Quiz
+        function checkAnswer(button, isCorrect) {
+            const feedback = document.getElementById('quiz-feedback');
+            const options = document.querySelectorAll('.quiz-option');
+            
+            // Deshabilitar todas las opciones
+            options.forEach(option => {
+                option.disabled = true;
+                option.classList.add('opacity-50');
+            });
+            
+            if (isCorrect) {
+                button.classList.add('bg-green-200', 'border-green-500');
+                feedback.innerHTML = '<div class="bg-green-100 text-green-800 p-3 rounded-lg"><i class="fas fa-check-circle mr-2"></i>¡Correcto! La palabra clave CREATE TABLE es fundamental para crear tablas en SQL.</div>';
+                feedback.classList.remove('hidden');
+                addXP(25);
+            } else {
+                button.classList.add('bg-red-200', 'border-red-500');
+                feedback.innerHTML = '<div class="bg-red-100 text-red-800 p-3 rounded-lg"><i class="fas fa-times-circle mr-2"></i>Incorrecto. La respuesta correcta es CREATE TABLE.</div>';
+                feedback.classList.remove('hidden');
+            }
+        }
+        
+        // Completar lección
+        function completeLesson() {
+            addXP(100);
+            completedLessons++;
+            updateProgress();
+            
+            // Mostrar notificación de éxito
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-600 text-white p-4 rounded-lg shadow-lg z-50';
+            notification.innerHTML = '<i class="fas fa-trophy mr-2"></i>¡Lección completada! +100 XP';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Editor SQL
+        function executeSQL() {
+            const editor = document.getElementById('sql-editor');
+            const result = document.getElementById('sql-result');
+            const code = editor.value.trim();
+            
+            if (!code) {
+                result.innerHTML = '<div class="text-red-600"><i class="fas fa-exclamation-triangle mr-2"></i>Por favor, escribe algún código SQL.</div>';
+                return;
+            }
+            
+            // Simulador básico de ejecución SQL
+            if (code.toLowerCase().includes('create table')) {
+                const tableName = extractTableName(code);
+                result.innerHTML = `
+                    <div class="bg-green-50 text-green-800 p-4 rounded">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <strong>Éxito!</strong> Tabla '${tableName}' creada correctamente.
+                        <div class="mt-3 text-sm">
+                            <strong>Estructura de tabla generada:</strong>
+                            <pre class="bg-white p-2 rounded mt-2 text-gray-700">${formatSQLOutput(code)}</pre>
+                        </div>
+                    </div>
+                `;
+                addXP(10);
+            } else {
+                result.innerHTML = '<div class="text-yellow-600"><i class="fas fa-info-circle mr-2"></i>Comando no reconocido. Intenta con CREATE TABLE.</div>';
+            }
+        }
+        
+        function extractTableName(sql) {
+            const match = sql.match(/create\s+table\s+(\w+)/i);
+            return match ? match[1] : 'nueva_tabla';
+        }
+        
+        function formatSQLOutput(sql) {
+            return sql.replace(/create table/gi, 'CREATE TABLE')
+                     .replace(/varchar/gi, 'VARCHAR')
+                     .replace(/int/gi, 'INT');
+        }
+        
+        function clearEditor() {
+            document.getElementById('sql-editor').value = '';
+            document.getElementById('sql-result').innerHTML = '<p class="text-gray-600 text-center mt-20">Ejecuta tu código SQL para ver los resultados aquí</p>';
+        }
+        
+        function loadExample(exampleNumber) {
+            const editor = document.getElementById('sql-editor');
+            const examples = {
+                1: `CREATE TABLE Estudiantes (
+    id INT,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    edad INT,
+    carrera VARCHAR(100)
+);`,
+                2: `CREATE TABLE Productos (
+    producto_id INT,
+    nombre_producto VARCHAR(255),
+    precio DECIMAL(10,2),
+    categoria VARCHAR(100),
+    stock INT
+);`,
+                3: `CREATE TABLE Empleados (
+    empleado_id INT,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    departamento VARCHAR(100),
+    salario DECIMAL(10,2),
+    fecha_contratacion DATE
+);`
+            };
+            
+            editor.value = examples[exampleNumber];
+        }
+        
+        // Sistema de Desafíos
+        function startChallenge(challengeId) {
+            const modal = document.getElementById('challenge-modal');
+            const title = document.getElementById('challenge-title');
+            const content = document.getElementById('challenge-content');
+            const editor = document.getElementById('challenge-editor');
+            
+            const challenges = {
+                1: {
+                    title: 'Desafío Básico: Tabla Libros',
+                    content: `
+                        <p class="text-gray-700 mb-4">Crea una tabla llamada 'Libros' que contenga las siguientes columnas:</p>
+                        <ul class="text-gray-700 space-y-1 mb-4">
+                            <li>• <strong>ID:</strong> Número entero</li>
+                            <li>• <strong>Titulo:</strong> Texto de hasta 200 caracteres</li>
+                            <li>• <strong>Autor:</strong> Texto de hasta 100 caracteres</li>
+                            <li>• <strong>Año:</strong> Número entero</li>
+                        </ul>
+                        <div class="bg-blue-50 p-3 rounded text-sm text-blue-800">
+                            💡 Tip: Recuerda usar los tipos de datos apropiados (INT para números, VARCHAR para texto)
+                        </div>
+                    `,
+                    answer: 'CREATE TABLE Libros'
+                },
+                2: {
+                    title: 'Desafío Intermedio: Tabla Pedidos',
+                    content: `
+                        <p class="text-gray-700 mb-4">Crea una tabla 'Pedidos' con restricciones:</p>
+                        <ul class="text-gray-700 space-y-1 mb-4">
+                            <li>• <strong>pedido_id:</strong> Clave primaria</li>
+                            <li>• <strong>cliente_nombre:</strong> No puede ser nulo</li>
+                            <li>• <strong>fecha_pedido:</strong> Tipo fecha</li>
+                            <li>• <strong>total:</strong> Decimal con 2 decimales</li>
+                        </ul>
+                    `,
+                    answer: 'CREATE TABLE Pedidos'
+                }
+            };
+            
+            title.textContent = challenges[challengeId].title;
+            content.innerHTML = challenges[challengeId].content;
+            editor.value = '';
+            modal.classList.remove('hidden');
+        }
+        
+        function closeChallenge() {
+            document.getElementById('challenge-modal').classList.add('hidden');
+            document.getElementById('challenge-feedback').classList.add('hidden');
+        }
+        
+        function submitChallenge() {
+            const editor = document.getElementById('challenge-editor');
+            const feedback = document.getElementById('challenge-feedback');
+            const code = editor.value.trim().toLowerCase();
+            
+            if (code.includes('create table') && (code.includes('libros') || code.includes('pedidos'))) {
+                feedback.innerHTML = `
+                    <div class="bg-green-100 text-green-800 p-4 rounded-lg">
+                        <i class="fas fa-trophy mr-2"></i>
+                        <strong>¡Desafío completado!</strong> Has ganado puntos XP.
+                    </div>
+                `;
+                feedback.classList.remove('hidden');
+                addXP(50);
+                
+                setTimeout(() => {
+                    closeChallenge();
+                }, 2000);
+            } else {
+                feedback.innerHTML = `
+                    <div class="bg-red-100 text-red-800 p-4 rounded-lg">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        No es correcto. Revisa tu sintaxis y vuelve a intentar.
+                    </div>
+                `;
+                feedback.classList.remove('hidden');
+            }
+        }
+        
+        // Sistema de XP y Progreso
+        function addXP(points) {
+            currentXP += points;
+            updateLevel();
+            updateDisplay();
+            
+            // Animación de puntos
+            const xpElement = document.getElementById('user-xp');
+            xpElement.classList.add('text-yellow-600', 'font-bold');
+            setTimeout(() => {
+                xpElement.classList.remove('text-yellow-600', 'font-bold');
+            }, 1000);
+        }
+        
+        function updateLevel() {
+            if (currentXP >= 3000) {
+                currentLevel = "Maestro SQL";
+            } else if (currentXP >= 2000) {
+                currentLevel = "Experto";
+            } else if (currentXP >= 1000) {
+                currentLevel = "Aprendiz";
+            } else {
+                currentLevel = "Novato";
+            }
+        }
+        
+        function updateDisplay() {
+            document.getElementById('user-xp').textContent = `${currentXP} XP`;
+            document.getElementById('user-level').textContent = currentLevel;
+        }
+        
+        function updateProgress() {
+            const progressBars = document.querySelectorAll('.xp-bar');
+            const progressPercentage = Math.min((currentXP / 2000) * 100, 100);
+            
+            progressBars.forEach(bar => {
+                bar.style.width = progressPercentage + '%';
+            });
+        }
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDisplay();
+            updateProgress();
+            
+            // Syntax highlighting para el editor SQL
+            const editor = document.getElementById('sql-editor');
+            if (editor) {
+                editor.addEventListener('input', function() {
+                    // Aquí podrías añadir syntax highlighting más avanzado
+                });
+            }
+            
+            // Mostrar la primera sección por defecto
+            // showSection('create-table');
+        });
+    </script>
+</body>
+</html>
